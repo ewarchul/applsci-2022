@@ -11,9 +11,10 @@ This paper presents a logistics problem, related to the transport of goods, whic
 
 ### Requirements
 
-* cmake (>= 3.21.4)
-* C++ compilator with C++17 support
+* `cmake` (>= v3.21.4)
+* C++ compilator with C++17 support (e.g. `g++10`)
 * AMPL
+* `R` (>= v4.10, **optionally**, if you want to generate plots) 
 
 ### Build 
 
