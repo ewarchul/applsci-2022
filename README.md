@@ -45,8 +45,8 @@ To reproduce CPLEX experiments
 
 # TODO
 
-[] improve language 
-[] add AMPL version
-[] add instructions to build C++
-[] add bash script to conduct numerical experiments for heuristics
-[] add script to reproduce ampl experiments
+- [] improve language 
+- [] add AMPL version
+- [] add instructions to build C++
+- [] add bash script to conduct numerical experiments for heuristics
+- [] add script to reproduce ampl experiments
