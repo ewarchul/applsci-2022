@@ -1,0 +1,40 @@
+option solver 'cplex';
+
+###option presolve_eps 0.00001;
+
+### Setting controls
+
+###option display_precision 8;
+
+option cplex_options 'timing=1 MIPDisplay=2 threads=1 time=43200';
+
+### Reading model
+
+printf '\n==============================\n';
+printf 'Reading model ...\n\n';
+
+reset;
+model 'model-sierpien.model';
+
+### Reading data
+
+printf '\n==============================\n';
+printf 'Reading data ...\n\n';
+
+data 'model-sierpien.dat';
+
+display travel_cost;
+display capacity;
+
+### Solving problem
+
+printf '\n==============================\n';
+printf 'Solving the problem ...\n\n';
+
+solve ;
+
+display X;
+display Y;
+display travel_cost,capacity,X,Y > PP_20-03.out;
+close naSierpien.out;
+end;

@@ -1,0 +1,43 @@
+option solver 'cplex';
+
+###option presolve_eps 0.00001;
+
+### Setting controls
+
+###option display_precision 8;
+
+option cplex_options 'timing=1 threads=1 MIPDisplay=2 time=43200';
+
+### Reading model
+
+printf '\n==============================\n';
+printf 'Reading model ...\n\n';
+
+reset;
+model 'CPLEX-model_pelny.model';
+
+### Reading data
+
+printf '\n==============================\n';
+printf 'Reading data ...\n\n';
+
+data 'CPLEX-model_pelny.dat';
+
+display stream_size;
+display travel_cost;
+display capacity;
+
+### Solving problem
+
+printf '\n==============================\n';
+printf 'Solving the problem ...\n\n';
+
+solve ;
+
+display X;
+display Y;
+display Z;
+display W;
+display stream_size,travel_cost,capacity,X,Y,Z,W > PP_20-03.out;
+close PP_20-03.out;
+end;
