@@ -1,0 +1,20 @@
+Uruchamianie
+Program nie jest interaktywny, zmian parametrów dokonuje się poprzez modyfikację kodu.
+
+W celu zmiany wielkości testowanej sieci należy w pliku main.cpp w liniach 18-21 ustawić odpowiednie ograniczenia współrzędnych geograficznych. W pliku country.cpp 
+znajduje się lista miast wraz z ich współrzędnymi. Lokalizacje uszeregowane są ze względu na szerokość geograficzną, zaczynając od wysuniętych najbardziej na północ.
+Najwygodniej manipulować rozmiarem sieci poprzez modyfikację zmiennej north.
+
+Wówczas można skompilować oraz uruchomić program, który na bazie wybranych miast automatycznie wygeneruje odpowiedni wariant sieci ze wszystkimi parametrami. Na jej
+podstawie wygenerowany zostanie plik bigExample.dat zawierający wszelkie dane potrzebne CPLEX'owemu modelowi. W przypadku jego braku można sprawdzić czy w pliku 
+writer.cpp w linii 10 podana jest poprawna ścieżka. Rezultaty działania algorytmów zostaną podane poprzez standardowe wyjście.
+
+
+Różnice w modelach.
+Na ten moment model testowany CPLEX'em różni się od tego wykorzystywanego przez heurystyki zastosowaniem parametrów związanych z czasem:
+- travel_time
+- function_time 
+- open_time
+- close_time
+- available_time
+- delivery_time 
