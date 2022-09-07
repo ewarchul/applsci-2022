@@ -1,0 +1,2 @@
+After creating the tested network variant, the C++ program will generate a .dat file for the program in the AMPL language.
+This file must be manually moved to the AMPL .model and .run files folder. One can check that the names of the .model and .dat files match those given in the .run file. Then run the program by running the command 'ampl file.run'
