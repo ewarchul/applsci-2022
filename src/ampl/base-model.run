@@ -14,14 +14,14 @@ printf '\n==============================\n';
 printf 'Reading model ...\n\n';
 
 reset;
-model 'model-sierpien.model';
+model 'base-model.model';
 
 ### Reading data
 
 printf '\n==============================\n';
 printf 'Reading data ...\n\n';
 
-data 'model-sierpien.dat';
+data 'base-model.dat';
 
 display travel_cost;
 display capacity;

@@ -34,89 +34,75 @@ void EvolutionaryAlgorithm::evolution(int abandonParameter, int o1, int o2,
     int op2 = rand() % o2 + 3;
 
     Bee specimenBis = this->specimen;
-    Network networkBis = this->network;
-    int mode = rand() % 10;
+    int mode = rand() % 100;
 
-    // użycie operatora trzeciego, który losowo przydziela ponownie realizacje
-    // do istniejacych samochodow jesli jakis samochod stanie sie pusty to jest
-    // usuwany, a jesli zostana nieprzydzielone realizacje to generujemy dla
-    // nich nowe pojazdy
-    if (mode == 0) {
-      // rozładowujemy samochody
+      // using a third operator who randomly reassigns realisations to existing cars, if a car becomes empty,
+      // it is removed, and if realisations are not allocated, we generate new vehicles for them
+    if (mode < 10) {
+      // we unload cars
       specimenBis.unloadCars();
-      // probujemy umiescic zwolnione realizacje w juz istniejacych samochodach
+      // we are trying to place the released projects in already existing cars
       specimenBis.fillTheCarsBis(network.getRealisations(), this->allPaths);
-    } else if (mode == 1 || mode == 2 || mode == 3 || mode == 4 ||
-               mode == 5) // operator wymiany realizacji
+    } else if (mode >= 10 && mode < 60) // realisation exchange operator
     {
       vector<MyRealisation> freeRealisations;
       int realisationsToRemove = specimenBis.getCars().size() / op1;
 
       while (realisationsToRemove != 0) {
-        // losujemy samochod i realizacje do usuniecia
+        // we draw a car and realisation to be removed
         int car = rand() % specimenBis.getCars().size();
         int realisation =
             rand() % specimenBis.getCars()[car].getRealisationsTaken().size();
 
-        // zapamietujemy usunieta realizacje
+        // we remember the deleted realization
         freeRealisations.push_back(
             network
                 .getRealisations()[specimenBis.getCars()[car]
                                        .getRealisationsTaken()[realisation]]);
 
-        // usuwamy realizacje z danego samochodu
+        // we remove realisation from a given car
         specimenBis.removeRealisation(car, realisation, network);
         realisationsToRemove--;
       }
 
-      // przydzielamy realizacje istniejacym samochodom
+      // we assign realisations to existing cars
       freeRealisations = specimenBis.fillTheCars(freeRealisations);
 
-      // generujemy samochody dla pozostalych realizacji
+      // we generate cars for other realisations
       specimenBis.generateCars(freeRealisations, this->allPaths);
     }
-    //        else if (mode == 5)     // operator przesiadania
-    //        {
-    //            int carIndex = rand() % specimenBis.getCars().size();
-    //            specimenBis.divideRealisation(carIndex, networkBis);
-    //        }
-    else if (mode == 6 || mode == 7 || mode == 8 ||
-             mode == 9) // operator wymiany samochodow
+    else if (mode >= 60 && mode < 100) // car exchange operator
     {
-      // ilosc samochodow do usuniecia zalezy od wspolczynnika
+      // the number of cars to be removed depends on the factor
       int carsToDelete = specimenBis.getCars().size() / op2;
       vector<MyRealisation> freeRealisations;
       while (carsToDelete > 0) {
         int carIndex =
             rand() % specimenBis.getCars()
-                         .size(); // losujemy indeks samochodu do usuniecia
+                         .size(); // we draw the index of the car to be removed
 
         for (int j = 0;
              j < specimenBis.getCars()[carIndex].getRealisationsTaken().size();
-             j++) // zapisujemy realizacje, które zostaną bez samochodu
+             j++) // we save realisations that will be left without a car
           freeRealisations.push_back(
               network.getRealisations()[specimenBis.getCars()[carIndex]
                                             .getRealisationsTaken()[j]]);
 
-        specimenBis.eraseCar(carIndex); // usuwamy samochod
+        specimenBis.eraseCar(carIndex); // we remove the car
         carsToDelete--;
       }
-      // probujemy umiescic zwolnione realizacje w juz istniejacych samochodach
+      // we are trying to place the released realisations in already existing cars
       freeRealisations = specimenBis.fillTheCars(freeRealisations);
-      // generujemy samochody dla niepodporzadkowanych realizacji
+      // we generate cars for uncontrolled realisations
       specimenBis.generateCars(freeRealisations, this->allPaths);
     }
 
     specimenBis.calculateCost(network.getRealisations().size(),
                               ifCalculateRating);
-    // losujemy osobnika ktory przejdzie dalej
-    int chosenSpecimen = rand() % 2;
+
     if (specimenBis.getCost() < specimen.getCost()) {
       specimen = specimenBis;
       abandonCounter = 0;
-      // jesli operator mutujący sieć polepszył rozwiązanie to przed następną
-      // iteracją należy podmienić sieci
-      this->network = networkBis;
     } else
       abandonCounter++;
 

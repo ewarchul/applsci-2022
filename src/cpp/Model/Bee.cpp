@@ -1,6 +1,6 @@
 #include "Bee.h"
 
-// konstruktor do tworzenia workera
+// Worker's constructor
 Bee::Bee(int id, const string &occupation,
          const vector<MyRealisation> &realisations, vector<Path> allPaths,
          bool ifCalculateRating, int initialRealisationsNumber) {
@@ -8,14 +8,13 @@ Bee::Bee(int id, const string &occupation,
   this->occupation = occupation;
   this->initialRealisationsNumber = initialRealisationsNumber;
 
-  // generujemy samochody danego osobnika, beda one przewozic wszyskie
-  // realizacje
+  // cars of given specimen are generated, they will carry all realisations
   generateCars(realisations, std::move(allPaths));
-  // obliczamy koszt rozwiazania danej pszczoly
+  // we calculate the cost of given specimen
   calculateCost(realisations.size(), ifCalculateRating);
 }
 
-// konstruktor do tworzenia widza
+// Onlooker's constructor
 Bee::Bee(int id, const string &occupation, const vector<Car> &cars, int cost,
          int assignedToWorker, int initialRealisationsNumber) {
   this->id = id;
@@ -62,8 +61,8 @@ void Bee::calculateCost(int realisationsNumber, bool ifCalculateRating) {
   int costBis = 0;
   for (int i = 0; i < cars.size(); i++) {
     int tmp =
-        cars[i].getPath().getLength(); // uzgadniac z innymi obliczeniami
-                                       // kosztu, uwzgledniac wspolczynniki
+        cars[i].getPath().getLength();
+
     if (cars[i].getType() == "RENAULT")
       tmp /= 10; // 25
     else if (cars[i].getType() == "FIAT")
@@ -80,10 +79,10 @@ void Bee::calculateCost(int realisationsNumber, bool ifCalculateRating) {
     this->calculateRating();
   this->quality =
       this->cost * this->cost *
-      this->cost; // do szescianu zeby zwiekszyc roznice pomiedzy osobnikami
+      this->cost;
 }
 
-// oblicza ocenę osobnika na podstawie kosztu oraz liczby pojazdów
+// calculates an individual's score on the basis of the average vehicle load
 void Bee::calculateRating() {
   int totalCapacity = 0;
   for (int i = 0; i < cars.size(); i++)
@@ -95,10 +94,10 @@ void Bee::calculateRating() {
 
 void Bee::setAssignedToWorker(int worker) { this->assignedToWorker = worker; }
 
+// creates cars as long as all projects are allocated
 void Bee::generateCars(
     const vector<MyRealisation> &realisations,
-    vector<Path> allPaths) // tworzy samochody tak dlugo az wszystkie realizacje
-                           // zostana przydzielone
+    vector<Path> allPaths)
 {
   int unsubjectedRealisations = realisations.size();
   int carCounter = this->cars.size();
@@ -112,17 +111,16 @@ void Bee::generateCars(
 
     int checkInclusionResult = checkInclusion(path, tmpRealisations);
     while (checkInclusionResult != -1) {
-      // sprawdzamy czy mozna zaladowac realizacje, jesli nie to nie szukamy juz
-      // dalej dla tego samochodu
+      // we check if it is possible to load the projects, if not then we are not looking for this car any longer
       if (!car.checkLoadingPossibility(tmpRealisations[checkInclusionResult]))
         break;
 
       car.loadRealisation(tmpRealisations[checkInclusionResult]);
-      // usuwamy przydzielona juz realizacje
+      // we remove already assigned realisation
       tmpRealisations.erase(tmpRealisations.begin() + checkInclusionResult);
       unsubjectedRealisations--;
 
-      // probujemy zaladowac kolejna realizacje
+      // we are trying to load another realisation
       checkInclusionResult = checkInclusion(path, tmpRealisations);
     }
 
@@ -135,23 +133,20 @@ void Bee::generateCars(
   }
 }
 
-// sprawdza czy w danej ścieżce zawiera się jakaś realizacja
+// checks if there is any realization in the given path
 int Bee::checkInclusion(const Path &path, vector<MyRealisation> realisations) {
-  // wektor realizacji zawierających się w ścieżce samochodu
+  // vector of realisations included in the path of the car
   vector<int> allInclRealisations;
 
   for (int i = 0; i < realisations.size(); i++) {
     bool startFound = false;
     for (int j = 0; j < path.getVerticesVisited().size(); j++) {
-      // zrodlo realizacji musi byc przed koncem
       if (realisations[i].getSource().getId() == path.getVerticesVisited()[j])
         startFound = true;
 
       if (startFound &&
           realisations[i].getDestination().getId() ==
-              path.getVerticesVisited()[j]) // zwracamy indeks realizacji
-                                            // zawartej w ścieżce podanej w
-                                            // argumencie
+              path.getVerticesVisited()[j]) // we return the index of the realisation contained in the path given in the argument
         allInclRealisations.push_back(i);
     }
   }
@@ -163,7 +158,7 @@ int Bee::checkInclusion(const Path &path, vector<MyRealisation> realisations) {
   return -1;
 }
 
-// zmienia pszczole w scouta
+// turns the bee into a scout
 void Bee::createScout(const Network &network, vector<Path> allPaths) {
   this->cars.clear();
   this->cost = 0;
@@ -180,8 +175,7 @@ void Bee::printBee(const Network &network) {
     this->cars[i].printCar(network);
 }
 
-// realizacje z usunietych wczesniej samochodow probujemy umiescic w juz
-// istniejacych
+// We are trying to place realisations from previously removed cars in existing ones
 vector<MyRealisation> Bee::fillTheCars(vector<MyRealisation> realisations) {
   vector<int> carIndexes;
   carIndexes.reserve(cars.size());
@@ -195,16 +189,15 @@ vector<MyRealisation> Bee::fillTheCars(vector<MyRealisation> realisations) {
 
     int checkInclusionResult = checkInclusion(cars[i].getPath(), realisations);
     while (checkInclusionResult != -1) {
-      // sprawdzamy czy mozna zaladowac realizacje, jesli nie to nie szukamy juz
-      // dalej dla tego samochodu
+      // we check if it is possible to load the realisations, if not then we are not looking for this car any longer
       if (!cars[i].checkLoadingPossibility(realisations[checkInclusionResult]))
         break;
 
       cars[i].loadRealisation(realisations[checkInclusionResult]);
-      // usuwamy przydzielona juz realizacje
+      // we remove already assigned realisations
       realisations.erase(realisations.begin() + checkInclusionResult);
 
-      // probujemy zaladowac kolejna realizacje
+      // we are trying to load another realisation
       checkInclusionResult = checkInclusion(cars[i].getPath(), realisations);
     }
     carIndexes.erase(carIndexes.begin() + tmp);
@@ -212,7 +205,7 @@ vector<MyRealisation> Bee::fillTheCars(vector<MyRealisation> realisations) {
   return realisations;
 }
 
-// usuwa realizacje z danego samochodu
+// removes realization from a given car
 void Bee::removeRealisation(int carIndex, int realisationIndex,
                             const Network &network) {
   this->cars[carIndex].unloadRealisation(
@@ -225,7 +218,7 @@ void Bee::removeRealisation(int carIndex, int realisationIndex,
   }
 }
 
-// kazdy samochod sprawdza czy moze skrocic swoje trasy
+// each car checks if it can shorten its routes
 void Bee::removeReduntantArcs(const Network &network) {
   for (int i = 0; i < this->cars.size(); i++)
     cars[i].cutPath(network);
@@ -236,7 +229,7 @@ void Bee::unloadCars() {
     cars[i].unloadAllRealisations();
 }
 
-// przekazany parametr realisations posiada wszystkie realizacje networka
+// the passed realisations parameter has all the realisations of the network
 void Bee::fillTheCarsBis(const vector<MyRealisation> &real,
                          const vector<Path> &allPaths) {
   vector<MyRealisation> realisations = real;
@@ -254,18 +247,15 @@ void Bee::fillTheCarsBis(const vector<MyRealisation> &real,
     vector<MyRealisation> singleRealisation;
     singleRealisation.push_back(realisations[realisationIndex]);
 
-    // przekazujemy jednoelementowy wektor, ponieważ checkInclusion korzysta z
-    // wektorów
+    // we pass a single-element vector because checkInclusion uses vectors
     int result = checkInclusion(this->cars[carsTmp[carIndex]].getPath(),
                                 singleRealisation);
 
-    // jeśli trasa realizacji zawiera się w samochodzie to sprawdzamy czy można
-    // ją do niego załadować
+    // if the route of realisation is inside the car, we check if it can be loaded into it
     if (result != -1)
       resultBis = this->cars[carsTmp[carIndex]].checkLoadingPossibility(
           singleRealisation[0]);
 
-    // jeśli realizacja mieści się w danym samochodzie, to jest załadowywana
     if (resultBis) {
       this->cars[carsTmp[carIndex]].loadRealisation(singleRealisation[0]);
       realisations.erase(realisations.begin() + realisationIndex);
@@ -281,8 +271,7 @@ void Bee::fillTheCarsBis(const vector<MyRealisation> &real,
     } else
       carsTmp.erase(carsTmp.begin() + carIndex);
 
-    // jesli nie udalo sie znalezc samochodu dla danej realizacji to tworzymy
-    // nowy i dodajemy go do listy aut
+    // if we could not find a car for a given realisation, create a new one and add it to the list of cars
     if (carsTmp.empty()) {
       this->generateCars(singleRealisation, allPaths);
       realisations.erase(realisations.begin() + realisationIndex);
@@ -295,7 +284,7 @@ void Bee::fillTheCarsBis(const vector<MyRealisation> &real,
     }
   }
 
-  // usuwamy samochody, ktore zostaly puste
+  // we remove cars that have been empty
   for (int i = 0; i < this->cars.size(); i++) {
     if (this->cars[i].getRealisationsTaken().empty()) {
       cars.erase(cars.begin() + i);
@@ -306,7 +295,7 @@ void Bee::fillTheCarsBis(const vector<MyRealisation> &real,
 
 Bee::Bee() {}
 
-// sprawdza kazdy samochod pod kątem zmiany jego typu
+// checks each car for a change of its type
 void Bee::checkCarTypes() {
   for (int i = 0; i < this->cars.size(); i++)
     this->cars[i].changeTypeOfCar();

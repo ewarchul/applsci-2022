@@ -16,7 +16,7 @@ int Car::getCapacity() const { return capacity; }
 
 const vector<int> &Car::getVolumeCapacities() const { return volumeCapacities; }
 
-// znajduje indeksy vertexów początku oraz końca realizacji w pathie
+// finds the start and end vertex indices of realisation in the path
 vector<int> Car::findInterval(const MyRealisation &realisation) {
   vector<int> indexes;
 
@@ -61,7 +61,7 @@ Car::Car(int id, int type, Path path1) : path(path1) {
   this->id = id;
 
   if (type == 0) {
-    this->type = "RENAULT"; // zawsze zmieniac razem z danymi w Network
+    this->type = "RENAULT";
     vector<int> initializer(path.getVerticesVisited().size() - 1, 25);
     this->massCapacities = initializer;
     this->volumeCapacities = initializer;
@@ -81,19 +81,19 @@ Car::Car(int id, int type, Path path1) : path(path1) {
   }
 }
 
-// sprawdzamy czy mozna skrocic trase samochodu
+// we check whether it is possible to shorten the car's route
 void Car::cutPath(const Network &network) {
   int possibleStart = true;
   int possibleEnd = true;
 
   while (possibleStart == true || possibleEnd == true) {
     for (size_t i = 0; i < realisationsTaken.size(); i++) {
-      // sprawdzamy czy mozna usunac poczatek
+      // we check if it is possible to delete the beginning
       if (network.getRealisations()[realisationsTaken[i]].getSource().getId() ==
           this->path.getVerticesVisited()[0])
         possibleStart = false;
 
-      // sprawdzamy czy mozna usunac koniec
+      // we check if it is possible to delete the end
       if (network.getRealisations()[realisationsTaken[i]]
               .getDestination()
               .getId() ==
@@ -132,7 +132,7 @@ void Car::divideRealisation(Network &network) {
   }
 }
 
-// sprawdza możliwość załadowania realizacji do samochodu
+// checks the possibility of loading the implementation into the car
 bool Car::checkLoadingPossibility(const MyRealisation &realisation) {
   vector<int> indexes = this->findInterval(realisation);
 
@@ -145,7 +145,7 @@ bool Car::checkLoadingPossibility(const MyRealisation &realisation) {
   return true;
 }
 
-// usuwa z samochodu wszystkie realizacje
+// removes all realisations from the car
 void Car::unloadAllRealisations() {
   realisationsTaken.clear();
 
@@ -164,7 +164,7 @@ void Car::unloadAllRealisations() {
   }
 }
 
-// wypisuje parametry samochodu
+// lists the parameters of the car
 void Car::printCar(const Network &network) {
   cout << "Typ: " << type
        << ", liczba załadowanych realizacji: " << realisationsTaken.size()
@@ -185,13 +185,12 @@ void Car::printCar(const Network &network) {
   cout << "\n\n";
 }
 
-// sprawdza czy samochod zawsze jest na tyle pusty, że mógłby zostać zmieniony
+// checks if the car is empty enough to be changed
 void Car::changeTypeOfCar() {
   if (this->type == "RENAULT")
     return;
 
-  // jeśli to tir to sprawdzamy tylko czy może być fiatem, jeśli tak, to
-  // następny if sprawdzi go jako fiata
+  // if it is a TIR, we only check if it can be a Fiat, if so, the next if block will check it as a Fiat
   if (this->type == "TIR") {
     bool check = false;
     for (size_t i = 0; i < this->massCapacities.size(); i++) {
@@ -209,8 +208,7 @@ void Car::changeTypeOfCar() {
     }
   }
 
-  // jeśli był tir, to teraz jako fiat również zostanie sprawdzone czy nie może
-  // stać się renault
+  // if there was a TIR, now it will also be checked as a Fiat whether it can become a Renault
   if (this->type == "FIAT") {
     bool check = false;
     for (size_t i = 0; i < this->massCapacities.size(); i++) {

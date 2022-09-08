@@ -37,7 +37,6 @@ public:
   void findBestBeeIndex();
   void incrementCycles();
   void replaceCars(int coefficient);
-  void modifyRealisations(int minL, int maxL, int coefficient);
   void switchRealisations(int coefficient);
   void mixCars();
 };

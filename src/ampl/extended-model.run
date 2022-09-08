@@ -14,14 +14,14 @@ printf '\n==============================\n';
 printf 'Reading model ...\n\n';
 
 reset;
-model 'CPLEX-model_pelny.model';
+model 'extended-model.model';
 
 ### Reading data
 
 printf '\n==============================\n';
 printf 'Reading data ...\n\n';
 
-data 'CPLEX-model_pelny.dat';
+data 'extended-model.dat';
 
 display stream_size;
 display travel_cost;

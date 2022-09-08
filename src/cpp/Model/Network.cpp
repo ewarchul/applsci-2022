@@ -102,7 +102,7 @@ Network::Network(const Country &country, double north, double south,
     for (int j = 0; j < VEHICLES_NUMBER; j++) {
       tmp.emplace_back(
           this->getArcs()[i].getLength() /* vehicle_coefficients[j]*/ /
-          10); // porownac z writerem
+          10);
     }
     travel_cost.emplace_back(tmp);
     arcs[i].setTravelCost(tmp);
@@ -320,10 +320,8 @@ void Network::generate_arcs(double coefficient, int max_vertices) {
     arc_targets.emplace_back(src);
     arc_counter += 2;
   }
-
-  for (size_t i = 0; i < sortedCities.size();
-       i++) // kopiowanie zawartosci arcse i arcsl z sorted cities do vertices
-  {
+  // copying arcse and arcsl content from sorted cities to vertices
+  for (size_t i = 0; i < sortedCities.size(); i++){
     for (int j = 0; j < vertices.size(); j++) {
       if (sortedCities[i].getId() == vertices[j].getId()) {
         for (int k = 0; k < sortedCities[i].getArcsLeaving().size(); k++) {
@@ -334,9 +332,8 @@ void Network::generate_arcs(double coefficient, int max_vertices) {
     }
   }
 
-  for (size_t i = 0; i < arc_counter;
-       i += 2) // tworzenie arcsow na podstawie informacji zawartych w
-  {            // tablicach arcsl i arcse rekordow tablicy vertices
+  // creating arcs from the information contained in the arcsl and arcse arrays of the vertices array records
+  for (size_t i = 0; i < arc_counter;i += 2){
     int dest, src;
     for (int j = 0; j < vertices.size(); j++) {
       for (int k = 0; k < vertices[j].getArcsLeaving().size(); k++) {
@@ -407,8 +404,7 @@ void Network::divideRealisations() {
     Path chosenPath = this->realisations[realisationToDivide].getShortestPath();
 
     if (chosenPath.getVerticesVisited().size() >= 4) {
-      // losujemy punkt, w którym podzielimy realizację i tworzymy na tej
-      // podstawie 2 nowe
+      // we draw the point at which we divide the realisation and create 2 new ones on this basis
       int cutPoint = rand() % (chosenPath.getVerticesVisited().size() - 2) + 1;
       MyVertex chosenVertex =
           this->vertices[chosenPath.getVerticesVisited()[cutPoint]];
@@ -435,14 +431,13 @@ void Network::divideRealisations() {
             vector<int>(chosenPath.getVerticesVisited().begin() + cutPoint,
                         chosenPath.getVerticesVisited().end()));
 
-        // usuwamy realizacje ktora zostala podzielona
+        // we remove realisation that was divided
         realisations.erase(realisations.begin() + realisationToDivide);
 
-        // do wektora realizacji dodajemy 2 nowo utworzone
+        // we add 2 newly created ones to the realization vector
         realisations.insert(
             realisations.begin() + realisationToDivide,
-            firstHalf); // pierwsza wchodzi na miejsce poprzedniej aby uniknac
-                        // zmiany indeksow
+            firstHalf);
         realisations.push_back(secondHalf);
       }
     }
@@ -502,23 +497,20 @@ bool Network::lies_between(const MyVertex &v1, const MyVertex &v2,
                            const MyVertex &v3) {
   if (fmin(v1.getXCoor(), v2.getXCoor()) <= v3.getXCoor() &&
       v3.getXCoor() <= fmax(v1.getXCoor(), v2.getXCoor()))
-    return true; // zakładamy, że p1,p2 i p3 są współliniowe
+    return true; // we assume that p1, p2 and p3 are collinear
   else
     return false;
 }
 
-// obliczamy najkrotsza trase dla losowej realizacji, a następnie dzielimy ją na
-// 2 mniejsze
+// we calculate the shortest route for the random realisation, and then divide it into 2 smaller ones
 vector<MyRealisation> Network::divideRandomRealisation(int realIndex) {
   // int realIndex = rand() % this->realisations.size();
   Path chosenPath = this->realisations[realIndex].getShortestPath();
   vector<MyRealisation> createdRealisations;
 
-  // losujemy tylko raz, dzieki temu jesli wiekszosc realizacji bedzie krotka to
-  // ciezko bedzie je dzielic dalej
+  // we only draw once, so if most of the realisations will be short, it will be hard to divide them further
   if (chosenPath.getVerticesVisited().size() >= 3) {
-    // losujemy punkt, w którym podzielimy realizację i tworzymy na tej
-    // podstawie 2 nowe
+    // we draw the point at which we divide the realisation and create 2 new ones on this basis
     int cutPoint = rand() % (chosenPath.getVerticesVisited().size() - 2) + 1;
     //        MyVertex chosenVertex =
     //        this->vertices[chosenPath.getVerticesVisited()[cutPoint]]; int
@@ -543,18 +535,13 @@ vector<MyRealisation> Network::divideRandomRealisation(int realIndex) {
         vector<int>(chosenPath.getVerticesVisited().begin() + cutPoint,
                     chosenPath.getVerticesVisited().end()));
 
-    // zmniejszamy id wszystkich realizacji, które znajdują się za dzieloną,
-    // ponieważ będzie ona usunięta
-    //        for (size_t i = realIndex; i < realisations.size(); i++)
-    //            realisations[i].setId(realisations[i].getId() - 1);
-
-    // usuwamy realizacje ktora zostala podzielona
+    // we remove realisation that have been divided
     realisations.erase(realisations.begin() + realIndex);
 
-    // do wektora realizacji dodajemy 2 nowo utworzone
+    // we add 2 newly created ones to the realisation vector
     realisations.insert(realisations.begin() + realIndex,
-                        firstHalf); // pierwsza wchodzi na miejsce poprzedniej
-                                    // aby uniknac zmiany indeksow
+                        firstHalf);
+
     createdRealisations.push_back(firstHalf);
     realisations.push_back(secondHalf);
     createdRealisations.push_back(secondHalf);
@@ -584,7 +571,9 @@ const string *Network::getDim() const { return dim; }
 
 const string *Network::getLogFun() const { return log_fun; }
 
-const string *Network::getDelays() const { return delays; }
+const vector<string> &Network::getDelays() const {
+    return delays;
+}
 
 const vector<vector<MyArc>> &Network::getArcsEntering() const {
   return arcs_entering;

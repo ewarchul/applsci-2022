@@ -14,7 +14,7 @@ BeeColony::BeeColony(int workersNumber,
                          initialRealisationsNumber);
 }
 
-// ocenia jakosc rozwiazan poszczegolnych pszczol robotnic
+// evaluates the quality of solutions of individual worker bees
 void BeeColony::evaluateBees() {
   beeRatings.clear();
 
@@ -26,7 +26,7 @@ void BeeColony::evaluateBees() {
     beeRatings.push_back(1.0 / workers[i].getQuality() / sum);
 }
 
-// tworzy widzow oraz przypisuje ich do okreslonych robotnikow
+// creates viewers and assigns them to specific workers
 void BeeColony::sendOnlookers() {
   onlookers.clear();
 
@@ -36,8 +36,7 @@ void BeeColony::sendOnlookers() {
     int initialRealisationsNumber =
         network.getVertices().size() * (network.getVertices().size() - 1) / 2;
     for (int j = 0; j < beeRatings.size(); j++) {
-      // jesli pszczola robotnica ma lepsza ocene to istnieje wieksza szansa, ze
-      // widz trafi do jej przedzialu
+      // if the worker bee has a better rating, there is a greater chance that a viewer will be assigned to her
       if (chosen_worker > left_sum && chosen_worker <= left_sum + beeRatings[j])
         onlookers.emplace_back(i, "onlooker", workers[j].getCars(),
                                workers[j].getCost(), j,
@@ -48,8 +47,7 @@ void BeeColony::sendOnlookers() {
   }
 }
 
-// jesli okreslony widz ma lepsza wartosc niz robotnik, do ktorego jest
-// przypisany to przekazuje mu swoje parametry
+// if a specific viewer has a better value than the worker to whom he is assigned, he passes his parameters to him
 void BeeColony::replaceWorkers() {
   for (int i = 0; i < onlookers.size(); i++) {
     if (onlookers[i].getAssignedToWorker() == -1)
@@ -68,38 +66,37 @@ void BeeColony::replaceWorkers() {
   }
 }
 
-// kazdy onlooker usuwa czesc samochodow swojego workera i losuje nowe na ich
-// miejsce
+// each onlooker removes some of his worker's cars and draws new ones to replace them
 void BeeColony::replaceCars(int coefficient) {
   coefficient = rand() % coefficient + 3;
   for (int i = 0; i < onlookers.size(); i++) {
-    // ilosc samochodow do usuniecia zalezy od wspolczynnika
+    // the number of cars to be removed depends on the coefficient
     int carsToDelete = onlookers[i].getCars().size() / coefficient;
     vector<MyRealisation> freeRealisations;
     while (carsToDelete > 0) {
       int carIndex =
           rand() % onlookers[i]
                        .getCars()
-                       .size(); // losujemy indeks samochodu do usuniecia
+                       .size(); // we draw the index of the car to be removed
 
       for (int j = 0;
            j < onlookers[i].getCars()[carIndex].getRealisationsTaken().size();
-           j++) // zapisujemy realizacje, które zostaną bez samochodu
+           j++) // we save realisations that will be left without a car
         freeRealisations.push_back(
             network.getRealisations()
                 [onlookers[i].getCars()[carIndex].getRealisationsTaken()[j]]);
 
-      onlookers[i].eraseCar(carIndex); // usuwamy samochod
+      onlookers[i].eraseCar(carIndex); // we remove the car
       carsToDelete--;
     }
-    // probujemy umiescic zwolnione realizacje w juz istniejacych samochodach
+    // we are trying to place the released realisations in already existing cars
     freeRealisations = onlookers[i].fillTheCars(freeRealisations);
-    // generujemy samochody dla niepodporzadkowanych realizacji
+    // we generate cars for uncontrolled realisations
     onlookers[i].generateCars(freeRealisations, this->allPaths);
   }
 }
 
-// oblicza koszt dla kazdej pszczoly w kolonii
+// calculates the cost for each bee in the colony
 void BeeColony::calculateCosts(bool ifCalculateRating) {
   for (int i = 0; i < workers.size(); i++)
     workers[i].calculateCost(network.getRealisations().size(),
@@ -126,7 +123,7 @@ void BeeColony::printColony() {
   }
 }
 
-// glowna petla algorytmu
+// the main loop of the algorithm
 int BeeColony::nectarHarvesting(int maxIterations, int op1Coefficient,
                                 int op2Coefficient, const Country &country,
                                 bool ifCalculateRating,
@@ -135,33 +132,26 @@ int BeeColony::nectarHarvesting(int maxIterations, int op1Coefficient,
   ofstream myFile;
   myFile.open("beeColonyLogs.csv", std::ios_base::app | std::ios_base::out);
   for (int i = 0; i < maxIterations; i++) {
-    this->evaluateBees();  // oceniamy kazdego workera
-    this->sendOnlookers(); // przydzielamy onlookerow do workerow
+    this->evaluateBees();  // we evaluate each worker
+    this->sendOnlookers(); // we assign onlookers to workers
 
-    int mode = rand() % 10;
-    if (mode == 0 || mode == 1 || mode == 2 || mode == 3)
-      this->replaceCars(op1Coefficient); // u onlookerow wymieniamy samochody
-    else if (mode == 4 || mode == 5 || mode == 6 || mode == 7 || mode == 8)
-      this->switchRealisations(op2Coefficient); // u onlookerow mieszamy
-                                                // realizacje miedzy samochodami
-    else if (mode == 9)
-      this->mixCars(); // onlookerzy losowo przydzielają realizacje do
-                       // istniejacych samochodow
+    int mode = rand() % 100;
+    if (mode >= 0 && mode < 40)
+      this->replaceCars(op1Coefficient); // we exchange cars at onlookers
+    else if (mode >= 40 && mode < 90)
+      this->switchRealisations(op2Coefficient); // at onlookers we mix realisations between cars
+    else if (mode >= 90)
+      this->mixCars(); // oonlookers randomly assign realisations to existing cars
 
-    this->calculateCosts(
-        ifCalculateRating);   // obliczamy koszty kazdego rozwiazania
-    this->replaceWorkers();   // zastepujemy workerow ich najlepszym onlookerem
-                              // (jesli istnieje)
-    this->findBestBeeIndex(); // odnajdujemy najlepsze rozwiazanie
+    this->calculateCosts(ifCalculateRating);   // we calculate the cost of each solution
+    this->replaceWorkers();   // we replace workers with their best onlooker (if any)
+    this->findBestBeeIndex(); // we find the best solution
 
-    this->incrementCycles(); // inkrementujemy liczniki cykli bez zastapienia
-    this->sendScouts(
-        this->rejectionParameter); // wysylamy zwiadowcow, jesli spelniony
-                                   // zostal warunek cykli
+    this->incrementCycles(); // increments the cycle counters
+    this->sendScouts(this->rejectionParameter); // we send scouts if the cycle condition is met
 
     if (i == tresholdValues[0]) {
-      myFile << tresholdValues[0] << "\t" << workers[bestBeeIndex].getCost()
-             << endl;
+      myFile << tresholdValues[0] << "\t" << workers[bestBeeIndex].getCost() << endl;
       tresholdValues.erase(tresholdValues.begin());
     }
   }
@@ -180,7 +170,7 @@ int BeeColony::nectarHarvesting(int maxIterations, int op1Coefficient,
   return workers[bestBeeIndex].getRealCost();
 }
 
-// jesli spelniony jest warunek cykli to wysyla zwiadowcow
+// if the cycle condition is met, it sends out scouts
 void BeeColony::sendScouts(int rp) {
   for (int i = 0; i < workers.size(); i++) {
     if (workers[i].getCyclesWithoutUpdate() >= rp && this->bestBeeIndex != i)
@@ -192,7 +182,7 @@ int BeeColony::getRejectionParameter() const { return rejectionParameter; }
 
 int BeeColony::getBestBeeIndex() const { return bestBeeIndex; }
 
-// znajduje indeks najlepszej pszczoly
+// finds the index of the best bee
 void BeeColony::findBestBeeIndex() {
   int minIndex = -1;
   int minValue = INT_MAX;
@@ -206,36 +196,14 @@ void BeeColony::findBestBeeIndex() {
   this->bestBeeIndex = minIndex;
 }
 
-// inkrementuje licznik cykli wszystkim pszczolom w kolonii
+// increments the cycle counter for all bees in the colony
 void BeeColony::incrementCycles() {
   for (int i = 0; i < workers.size(); i++)
     workers[i].incrementCycles();
 }
 
-// losuje realiacje sposrod juz przydzielonych, a nastepnie dzieli je lub laczy
-// z innymi, spelniajac warunki minimalnej oraz maksymalnej dlugosci // todo
-// skoncz
-void BeeColony::modifyRealisations(int minL, int maxL, int coefficient) {
-  for (int i = 0; i < onlookers.size(); i++) {
-    int realisationsToModify = onlookers[i].getCars().size() / coefficient;
-    while (realisationsToModify != 0) {
-      int car = rand() %
-                onlookers[i].getCars().size(); // samochod z ktorego wylosujemy
-                                               // realizacje do zmodyfikowania
-      for (int j = 0;
-           j < onlookers[i].getCars()[car].getRealisationsTaken().size(); j++) {
-        int realisation =
-            rand() % onlookers[i]
-                         .getCars()[car]
-                         .getRealisationsTaken()
-                         .size(); // id realizacji do zmodyfikowania
-      }
-    }
-  }
-}
-
-// z losowych samochodow usuwamy pojedyncze realizacje, nastepnie probujemy je
-// zapakowac do innych, tym, ktorych sie nie udalo losujemy nowe samochody
+// we remove individual realisations from random cars, then we try to pack them to others,
+// for those who failed we randomly select new cars
 void BeeColony::switchRealisations(int coefficient) {
   coefficient = rand() % coefficient + 3;
   for (int i = 0; i < onlookers.size(); i++) {
@@ -243,36 +211,36 @@ void BeeColony::switchRealisations(int coefficient) {
     int realisationsToRemove = onlookers[i].getCars().size() / coefficient;
 
     while (realisationsToRemove != 0) {
-      // losujemy samochod i realizacje do usuniecia
+      // we draw a car and realisation to be removed
       int car = rand() % onlookers[i].getCars().size();
       int realisation =
           rand() % onlookers[i].getCars()[car].getRealisationsTaken().size();
 
-      // zapamietujemy usunieta realizacje
+      // we remember the deleted realizations
       freeRealisations.push_back(
           network.getRealisations()[onlookers[i]
                                         .getCars()[car]
                                         .getRealisationsTaken()[realisation]]);
 
-      // usuwamy realizacje z danego samochodu
+      // we remove projects from a given car
       onlookers[i].removeRealisation(car, realisation, network);
 
       realisationsToRemove--;
     }
-    // przydzielamy realizacje istniejacym samochodom
+    // we assign projects to existing cars
     freeRealisations = onlookers[i].fillTheCars(freeRealisations);
 
-    // generujemy samochody dla pozostalych realizacji
+    // we generate cars for other projects
     onlookers[i].generateCars(freeRealisations, this->allPaths);
   }
 }
 
-// operator na nowo przydzielajacy realizacje do istniejacych samochodow
+// operator reassigning realisations to existing cars
 void BeeColony::mixCars() {
   for (int i = 0; i < onlookers.size(); i++) {
-    // rozładowujemy samochody
+    // we unload cars
     onlookers[i].unloadCars();
-    // probujemy umiescic zwolnione realizacje w juz istniejacych samochodach
+    // we are trying to place the released projects in already existing cars
     onlookers[i].fillTheCarsBis(network.getRealisations(), this->allPaths);
   }
 }

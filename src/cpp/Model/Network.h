@@ -29,7 +29,7 @@ private:
   string vehicles[VEHICLES_NUMBER] = {"RENAULT", "FIAT", "TIR"};
   string dim[2] = {"M", "V"};
   string log_fun[3] = {"NONE", "WER", "PER"};
-  string delays[4] = {"D3", "D2", "D1", "D0"};
+  vector<string> delays = {"D3", "D2", "D1", "D0"};
   string periods[PERIODS_NUMBER] = {"MON", "TUE", "WED", "THU",
                                     "FRI", "SAT", "SUN"};
 
@@ -77,7 +77,7 @@ public:
   const string *getVehicles() const;
   const string *getDim() const;
   const string *getLogFun() const;
-  const string *getDelays() const;
+  const vector<string> &getDelays() const;
   const vector<vector<MyArc>> &getArcsEntering() const;
   const vector<vector<MyArc>> &getArcsLeaving() const;
   const vector<vector<MyArc>> &getArcsForVehicle() const;
