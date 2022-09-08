@@ -8,13 +8,12 @@ using namespace std;
 
 class Country {
 private:
-    vector<MyVertex> cities;
+  vector<MyVertex> cities;
 
 public:
-    Country();
+  Country();
 
-    const vector<MyVertex> &getCities() const;
-
+  const vector<MyVertex> &getCities() const;
 };
 
-#endif //NETWORKGENERATOR_COUNTRY_H
+#endif // NETWORKGENERATOR_COUNTRY_H

@@ -1,19 +1,27 @@
-cmake_minimum_required(VERSION 3.16)
-project(NetworkGenerator)
+cmake_minimum_required(VERSION 3.21)
+project(NetworkSolver CXX)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-add_executable(NetworkGenerator
-        main.cpp
-        Country.cpp Country.h
-        MyVertex.cpp MyVertex.h
-        MyArc.cpp MyArc.h
-        MyRealisation.cpp MyRealisation.h
-        Network.cpp Network.h
-        Writer.cpp Writer.h
-        BeeColony.cpp BeeColony.h
-        Bee.cpp Bee.h
-        Path.h Path.cpp
-        Car.cpp Car.h
-        DFS.cpp DFS.h
-        EvolutionaryAlgorithm.cpp EvolutionaryAlgorithm.h)
+if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  set(COMPILER_FLAGS -Wall -Wextra -Ofast)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+  set(COMPILER_FLAGS -Wall -Wextra -Ofast)
+endif()
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
+  set(COMPILER_FLAGS /O2 /Ot)
+endif()
+
+add_subdirectory(Model)
+add_subdirectory(Algorithms)
+
+add_executable(NetworkSolver main.cpp)
+target_link_libraries(NetworkSolver PRIVATE Algorithms Model)
+target_compile_options(NetworkSolver
+                       PUBLIC "$<$<CONFIG:RELEASE>:${COMPILER_FLAGS}>")
+target_compile_options(NetworkSolver
+                       PUBLIC "$<$<CONFIG:DEBUG>:-g>")
