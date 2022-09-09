@@ -35,7 +35,7 @@ void Car::loadRealisation(const MyRealisation &realisation) {
   realisationsTaken.push_back(realisation.getId());
   vector<int> indexes = this->findInterval(realisation);
 
-  for (size_t i = indexes[0]; i < indexes[1]; i++) {
+  for (auto i = indexes[0]; i < indexes[1]; i++) {
     this->massCapacities[i] -= realisation.getMass();
     this->volumeCapacities[i] -= realisation.getVolume();
   }
@@ -51,7 +51,7 @@ void Car::unloadRealisation(const MyRealisation &realisation) {
 
   vector<int> indexes = this->findInterval(realisation);
 
-  for (size_t i = indexes[0]; i < indexes[1]; i++) {
+  for (auto i = indexes[0]; i < indexes[1]; i++) {
     this->massCapacities[i] += realisation.getMass();
     this->volumeCapacities[i] += realisation.getVolume();
   }
@@ -136,7 +136,7 @@ void Car::divideRealisation(Network &network) {
 bool Car::checkLoadingPossibility(const MyRealisation &realisation) {
   vector<int> indexes = this->findInterval(realisation);
 
-  for (size_t i = indexes[0]; i < indexes[1]; i++) {
+  for (auto i = indexes[0]; i < indexes[1]; i++) {
     if (this->massCapacities[i] - realisation.getMass() < 0 ||
         this->volumeCapacities[i] - realisation.getVolume() < 0)
       return false;

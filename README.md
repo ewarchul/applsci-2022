@@ -1,53 +1,81 @@
-# applsci-2022
+# Applications of metaheuristics inspired by nature in a specific optimization problem of a postal distribution sector
 
-This repository contains a code used in the experiments conducted for the article written to Applied Sciences, i.e. 'Applications of metaheuristics inspired nature in combinatorial logistic problem' by Michał Berliński, [Eryk Warchulski](orcid.org/0000-0003-1416-7031), and [Stanisław Kozdrowski](orcid.org/0000-0001-6647-5189).
+>This repository contains a code used in the experiments conducted for the article written to Applied Sciences, i.e. 'Applications of metaheuristics inspired nature in combinatorial logistic problem' by [Michał Berliński](https://github.com/mberlins), [Eryk Warchulski](ewarchul.github.io), and [Stanisław Kozdrowski](orcid.org/0000-0001-6647-5189).
 
 ## About
 
-This paper presents a logistics problem, related to the transport of goods, which can be applied in practice, for example in postal or courier services. Two mathematical models are presented as problems occurring in a logistics network. The main objective of the optimisation problem presented is to minimise capital resources (Capex), such as cars or containers. Three methods are proposed to solve this problem. The first is a method based on mixed integer programming (MIP) and available through the CPLEX solver. This method is the reference method for us because, as an exact method, it guarantees to find the optimal solution as long as the problem is not too large. However, the logistic problem under consideration belongs to the class of NP-complete problems and therefore, for larger problems, i.e., for networks of large size, the MIP method does not find any integer solution in a reasonable computational time. Therefore, two nature-inspired heuristic methods have been proposed. The first is the evolutionary algorithm and the second is the artificial bee colony algorithm. Results indicate that the heuristics methods solve instances of large size, giving suboptimal solution and therefore enabling its application to real-life scenarios.
+This paper presents a logistics problem, related to the transport of goods, which can be applied in practice, for example in postal or courier services. Two mathematical models are presented as problems occurring in a logistics network. The main objective of the optimisation problem presented is to minimise capital resources (Capex), such as cars or containers. 
+
+Three methods are proposed to solve this problem: a method based on mixed integer programming (MIP) and available through the CPLEX solver and two nature-inspired heuristic methods. The first is the evolutionary algorithm (EA) and the second is the artificial bee colony algorithm (ABC). 
+
+Results indicate that the heuristics methods solve instances of large size, giving suboptimal solution and therefore enabling its application to real-life scenarios.
+
+### Directory structure
+
+* `src/ampl`
+
+Contains implementation of the CPLEX solver in ampl.
+
+* `src/cpp` 
+
+Contains implementation of the ABC and the EA algorithms (cpp/Algorithms/)
+together with the model implementation (cpp/Network/), i.e., the graph
+structure which represents network of cities in considered logitic problem.
+
+* `src/R`
+
+Contains R functions used to generate plots depicted in the paper.
 
 
-## How to reproduce experiments
+>Each implementation of considered solvers in the article are provided by
+[Michał Berliński](https://github.com/mberlins) and were sligthly refactored by
+[Eryk Warchulski](ewarchul.github.io).
 
-### Requirements
 
-* `cmake` (>= v3.21.4)
+## Requirements
+
 * C++ compilator with C++17 support (e.g. `g++10`)
+* `cmake` (>= v3.21.4)
 * `ampl` (>= v20180618)
-* `R` (>= v4.10, **optionally**, if you want to generate plots) 
+* `R` (>= v4.10, **optionally**, if you want to generate plots similar to these
+    in the article).
 
-### Build 
+## Build 
 
 Run following commands to build C++ code:
 
 ```sh
 mkdir -p src/cpp/build && cd src/cpp/build
-cmake .. 
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_COMPILER='/path/to/compiler' .. 
 make -j$(nproc)
 ```
 
-### Run experiments
+It will build two shared library which provides the model of the cosidered
+problem (`libmodel.so`) and the algorithms (`libalgorithms.so`) together with a
+executable binary `NetworkSolver`.
 
-After building the binaries of heuristics you are ready to reproduce numerical
-experiments.
+## Reproduce experiments
 
-To reproduce heuristics numerical experiments run command below:
+The usage of the `NetworkSolver` is following:
 
 ```
-bash run-heuristics.sh
+ ./NetworkSolver [--generate-dat] --method=[ABC|EA]
 ```
+where:               
+* `generate-dat` generates a .dat file for the program in the AMPL language
+* `method` specifies which heuristics will be executed, i.e., the ABC or the
+    EA.
 
-it will execute bash script and place all results in the `data/` directory.
+To reproduce the experiments with the CPLEX solver, one has to run
+`NetworkSolver` with `--generate-dat` option.
 
+The generated file must be manually moved to the AMPL directory (`src/ampl`).
 
-To reproduce CPLEX experiments 
+> **Note**:<br>
+> One can check that the names of the .model and .dat files match those given in the .run file. 
 
+Then run the program by running the command:
 
-
-# TODO
-
-- [ ] improve language 
-- [ ] add AMPL version
-- [ ] add instructions to build C++
-- [ ] add bash script to conduct numerical experiments for heuristics
-- [ ] add script to reproduce ampl experiments
+```sh
+ampl file.run
+```

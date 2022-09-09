@@ -4,14 +4,14 @@ using namespace std;
 
 void DFS::printpath(vector<int> path) {
   int size = path.size();
-  for (int i = 0; i < size; i++)
+  for (size_t i = 0; i < size; i++)
     cout << path[i] << " ";
   cout << endl;
 }
 
 int DFS::isNotVisited(int x, vector<int> path) {
   int size = path.size();
-  for (int i = 0; i < size; i++)
+  for (size_t i = 0; i < size; i++)
     if (path[i] == x)
       return 0;
   return 1;
@@ -32,7 +32,7 @@ void DFS::findpaths(int src, int dst) {
     if (last == dst)
       solutions.emplace_back(path);
 
-    for (int i = 0; i < graph[last].size(); i++) {
+    for (size_t i = 0; i < graph[last].size(); i++) {
       if (isNotVisited(graph[last][i], path)) {
         vector newpath(path);
         newpath.push_back(graph[last][i]);
@@ -45,12 +45,12 @@ void DFS::findpaths(int src, int dst) {
 DFS::DFS(vector<MyVertex> vertices, vector<MyArc> arcs, int size) {
   this->V = size;
 
-  for (int i = 0; i < vertices.size(); i++) {
+  for (size_t i = 0; i < vertices.size(); i++) {
     vector<int> row;
-    for (int j = 0; j < vertices.size(); j++)
+    for (size_t j = 0; j < vertices.size(); j++)
       row.push_back(0);
 
-    for (int k = 0; k < vertices[i].getArcsLeaving().size(); k++)
+    for (size_t k = 0; k < vertices[i].getArcsLeaving().size(); k++)
       row[arcs[vertices[i].getArcsLeaving()[k]].getTarget().getId()] =
           arcs[vertices[i].getArcsLeaving()[k]].getTarget().getId();
 
@@ -69,7 +69,7 @@ vector<Path> DFS::pickSolutions(int maxSize, const Country &country) {
     int maxIndex = -1;
     int maxValue = -1;
 
-    for (int i = 0; i < solutions.size(); i++) {
+    for (size_t i = 0; i < solutions.size(); i++) {
       if (solutions[i].getLength() > maxValue) {
         maxValue = solutions[i].getLength();
         maxIndex = i;
@@ -81,9 +81,9 @@ vector<Path> DFS::pickSolutions(int maxSize, const Country &country) {
 }
 
 void DFS::setLengths(const Country &country) {
-  for (int i = 0; i < solutions.size(); i++) {
+  for (size_t i = 0; i < solutions.size(); i++) {
     int length = 0;
-    for (int j = 0; j < solutions[i].getVerticesVisited().size() - 1; j++)
+    for (size_t j = 0; j < solutions[i].getVerticesVisited().size() - 1; j++)
       length += MyArc::calculateLength(
           country.getCities()[solutions[i].getVerticesVisited()[j]],
           country.getCities()[solutions[i].getVerticesVisited()[j + 1]]);

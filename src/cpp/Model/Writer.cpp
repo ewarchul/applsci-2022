@@ -7,13 +7,13 @@ void Writer::createExtendedDat(Network network) {
   myFile.open("extended-model.dat");
 
   // string vehicles[VEHICLES_NUMBER] = {"RENAULT", "FIAT", "TIR"};
-  double vehicle_coefficients[VEHICLES_NUMBER] = {0.3, 0.5, 0.9};
+//  double vehicle_coefficients[VEHICLES_NUMBER] = {0.3, 0.5, 0.9};
   double time_coefficients[VEHICLES_NUMBER] = {70, 60, 50};
 
   // writing vertices ****************************************
   // ********************************
   myFile << "set VERT :=";
-  for (int i = 0; i < network.getVertices().size(); i++) {
+  for (size_t i = 0; i < network.getVertices().size(); i++) {
     char a = network.getVertices()[i].getName()[1];
     a = toupper(a);
     char b = network.getVertices()[i].getName()[2];
@@ -25,7 +25,7 @@ void Writer::createExtendedDat(Network network) {
   // writing arcs ******************************************
   // *********************************
   myFile << "set ARCS :=";
-  for (int i = 0; i < network.getArcs().size(); i++) {
+  for (size_t i = 0; i < network.getArcs().size(); i++) {
     myFile << "\t" << network.getArcs()[i].getCode();
   }
   myFile << ";\n\n";
@@ -33,7 +33,7 @@ void Writer::createExtendedDat(Network network) {
   // writing realisations **********************************
   // *********************************
   myFile << "set STREAMS :=";
-  for (int i = 0; i < network.getRealisations().size(); i++) {
+  for (size_t i = 0; i < network.getRealisations().size(); i++) {
     myFile << "\t" << network.getRealisations()[i].getCode();
   }
   myFile << ";\n\n";
@@ -67,12 +67,12 @@ void Writer::createExtendedDat(Network network) {
 
   // writing arcs entering    ******************************
   // ********************************
-  for (int i = 0; i < network.getVertices().size(); i++) {
+  for (size_t i = 0; i < network.getVertices().size(); i++) {
     myFile << "set ARCSE[";
     myFile << network.getVertices()[i].getCode() << "] :=";
-    for (int j = 0; j < network.getVertices()[i].getArcsEntering().size();
+    for (size_t j = 0; j < network.getVertices()[i].getArcsEntering().size();
          j++) {
-      for (int k = 0; k < network.getArcs().size(); k++) {
+      for (size_t k = 0; k < network.getArcs().size(); k++) {
         if (network.getArcs()[k].getId() ==
             network.getVertices()[i].getArcsEntering()[j]) {
           myFile << " " << network.getArcs()[k].getCode();
@@ -85,11 +85,11 @@ void Writer::createExtendedDat(Network network) {
 
   // writing arcs leaving    *******************************
   // ********************************
-  for (int i = 0; i < network.getVertices().size(); i++) {
+  for (size_t i = 0; i < network.getVertices().size(); i++) {
     myFile << "set ARCSL[";
     myFile << network.getVertices()[i].getCode() << "] :=";
-    for (int j = 0; j < network.getVertices()[i].getArcsLeaving().size(); j++) {
-      for (int k = 0; k < network.getArcs().size(); k++) {
+    for (size_t j = 0; j < network.getVertices()[i].getArcsLeaving().size(); j++) {
+      for (size_t k = 0; k < network.getArcs().size(); k++) {
         if (network.getArcs()[k].getId() ==
             network.getVertices()[i].getArcsLeaving()[j]) {
           myFile << " " << network.getArcs()[k].getCode();
@@ -103,7 +103,7 @@ void Writer::createExtendedDat(Network network) {
     // writing stream source    ******************************
     // ********************************
     myFile << "param source :=\n";
-    for (int i = 0; i < network.getRealisations().size(); i++) {
+    for (size_t i = 0; i < network.getRealisations().size(); i++) {
         myFile << "\t" << network.getRealisations()[i].getCode() << "\t"
                << network.getRealisations()[i].getSource().getCode() << "\n";
     }
@@ -112,7 +112,7 @@ void Writer::createExtendedDat(Network network) {
     // writing stream destination   **************************
     // ********************************
     myFile << "param dest :=\n";
-    for (int i = 0; i < network.getRealisations().size(); i++) {
+    for (size_t i = 0; i < network.getRealisations().size(); i++) {
         myFile << "\t" << network.getRealisations()[i].getCode() << "\t"
                << network.getRealisations()[i].getDestination().getCode() << "\n";
     }
@@ -121,7 +121,7 @@ void Writer::createExtendedDat(Network network) {
   // writing stream size ***********************************
   // ********************************
   myFile << "param stream_size :\tM\tV\t:=\n";
-  for (int i = 0; i < network.getRealisations().size(); i++) {
+  for (size_t i = 0; i < network.getRealisations().size(); i++) {
     double size = network.getRealisations()[i].getVolume();
     myFile << "\t\t" << network.getRealisations()[i].getCode() << "\t" << size
            << "\t" << size << "\n";
@@ -131,7 +131,7 @@ void Writer::createExtendedDat(Network network) {
   // writing max delay    **************************************
   // ********************************
   myFile << "param max_delay :=\n";
-  for (int i = 0; i < network.getRealisations().size(); i++) {
+  for (size_t i = 0; i < network.getRealisations().size(); i++) {
       myFile << "\t" << network.getRealisations()[i].getCode() << "\t"
       << "D2"
       << "\n";
@@ -141,12 +141,12 @@ void Writer::createExtendedDat(Network network) {
   // writing travel cost  **********************************
   // ********************************
   myFile << "param travel_cost (tr):";
-  for (int i = 0; i < VEHICLES_NUMBER; i++) {
+  for (size_t i = 0; i < VEHICLES_NUMBER; i++) {
     myFile << "\t" << network.getVehicles()[i];
   }
   myFile << " :=\n";
 
-  for (int i = 0; i < network.getArcs().size(); i++) {
+  for (size_t i = 0; i < network.getArcs().size(); i++) {
     myFile << "\t\t" << network.getArcs()[i].getCode();
     myFile
         << "\t"
@@ -170,11 +170,11 @@ void Writer::createExtendedDat(Network network) {
   // writing travel time  *********************************
   // ********************************
   myFile << "param travel_time (tr):";
-  for (int i = 0; i < VEHICLES_NUMBER; i++) {
+  for (size_t i = 0; i < VEHICLES_NUMBER; i++) {
     myFile << "\t" << network.getVehicles()[i];
   }
   myFile << " :=\n";
-  for (int i = 0; i < network.getArcs().size(); i++) {
+  for (size_t i = 0; i < network.getArcs().size(); i++) {
     myFile << "\t\t" << network.getArcs()[i].getCode();
     myFile << "\t"
            << double(network.getArcs()[i].getLength() / time_coefficients[0]);
@@ -189,8 +189,8 @@ void Writer::createExtendedDat(Network network) {
   // writing function cost    ******************************
   // ********************************
   myFile << "param function_cost:\tWER\tPER:=\n";
-  for (int i = 0; i < network.getRealisations().size(); i++) {
-    for (int j = 0; j < network.getVertices().size(); j++) {
+  for (size_t i = 0; i < network.getRealisations().size(); i++) {
+    for (size_t j = 0; j < network.getVertices().size(); j++) {
       myFile << "\t" << network.getRealisations()[i].getCode() << "\t"
              << network.getVertices()[j].getCode() << "\t"
              << "10"
@@ -203,8 +203,8 @@ void Writer::createExtendedDat(Network network) {
   // writing function time    *****************************
   // ********************************
   myFile << "param function_time:\tWER\tPER:=\n";
-  for (int i = 0; i < network.getRealisations().size(); i++) {
-    for (int j = 0; j < network.getVertices().size(); j++) {
+  for (size_t i = 0; i < network.getRealisations().size(); i++) {
+    for (size_t j = 0; j < network.getVertices().size(); j++) {
       myFile << "\t" << network.getRealisations()[i].getCode() << "\t"
              << network.getVertices()[j].getCode() << "\t"
              << "1"
@@ -217,7 +217,7 @@ void Writer::createExtendedDat(Network network) {
   // writing capacity **************************************
   // ********************************
   myFile << "param capacity (tr): ";
-  for (int i = 0; i < VEHICLES_NUMBER; i++) {
+  for (size_t i = 0; i < VEHICLES_NUMBER; i++) {
       myFile << "\t" << network.getVehicles()[i];
   }
   myFile << " :=\n";
@@ -243,7 +243,7 @@ void Writer::createExtendedDat(Network network) {
   // writing gathered     **********************************
   // ********************************
   myFile << "param gathered :=\n";
-  for (int i = 0; i < network.getRealisations().size(); i++) {
+  for (size_t i = 0; i < network.getRealisations().size(); i++) {
     myFile << "\t" << network.getRealisations()[i].getCode() << "\t"
            << network.getRealisations()[i].getCode() << "\n";
   }
@@ -252,14 +252,14 @@ void Writer::createExtendedDat(Network network) {
   // writing available time    **********************************
   // ********************************
   myFile << "param available_time :\t";
-  for (int i = 0; i < network.getDelays().size(); i++)
+  for (size_t i = 0; i < network.getDelays().size(); i++)
       myFile << "\t" << network.getDelays()[i];
   myFile << " :=\n";
 
-  for (int i = 0; i < network.getRealisations().size(); i++)
+  for (size_t i = 0; i < network.getRealisations().size(); i++)
   {
       myFile << "\t\t" << network.getRealisations()[i].getCode();
-      for (int j = 0; j < network.getDelays().size(); j++)
+      for (size_t j = 0; j < network.getDelays().size(); j++)
           myFile << "\t" << 24 - (network.getDelays().size() - j - 1) * 2;
       myFile << "\n";
   }
@@ -272,7 +272,7 @@ void Writer::createFirstModelDat(Network network, int demand_max_value) {
       "base-model.dat");
 
   myFile << "set VERT :=";
-  for (int i = 0; i < network.getVertices().size(); i++) {
+  for (size_t i = 0; i < network.getVertices().size(); i++) {
     char a = network.getVertices()[i].getName()[1];
     a = toupper(a);
     char b = network.getVertices()[i].getName()[2];
@@ -284,7 +284,7 @@ void Writer::createFirstModelDat(Network network, int demand_max_value) {
   // writing arcs ******************************************
   // *********************************
   myFile << "set ARCS :=";
-  for (int i = 0; i < network.getArcs().size(); i++) {
+  for (size_t i = 0; i < network.getArcs().size(); i++) {
     myFile << "\t" << network.getArcs()[i].getCode();
   }
   myFile << ";\n\n";
@@ -292,7 +292,7 @@ void Writer::createFirstModelDat(Network network, int demand_max_value) {
   // writing realisations **********************************
   // *********************************
   myFile << "set STREAMS :=";
-  for (int i = 0; i < network.getRealisations().size(); i++) {
+  for (size_t i = 0; i < network.getRealisations().size(); i++) {
     myFile << "\t" << network.getRealisations()[i].getCode();
   }
   myFile << ";\n\n";
@@ -317,12 +317,12 @@ void Writer::createFirstModelDat(Network network, int demand_max_value) {
 
   // writing arcs entering    ******************************
   // ********************************
-  for (int i = 0; i < network.getVertices().size(); i++) {
+  for (size_t i = 0; i < network.getVertices().size(); i++) {
     myFile << "set ARCSE[";
     myFile << network.getVertices()[i].getCode() << "] :=";
-    for (int j = 0; j < network.getVertices()[i].getArcsEntering().size();
+    for (size_t j = 0; j < network.getVertices()[i].getArcsEntering().size();
          j++) {
-      for (int k = 0; k < network.getArcs().size(); k++) {
+      for (size_t k = 0; k < network.getArcs().size(); k++) {
         if (network.getArcs()[k].getId() ==
             network.getVertices()[i].getArcsEntering()[j]) {
           myFile << " " << network.getArcs()[k].getCode();
@@ -335,11 +335,11 @@ void Writer::createFirstModelDat(Network network, int demand_max_value) {
 
   // writing arcs leaving    *******************************
   // ********************************
-  for (int i = 0; i < network.getVertices().size(); i++) {
+  for (size_t i = 0; i < network.getVertices().size(); i++) {
     myFile << "set ARCSL[";
     myFile << network.getVertices()[i].getCode() << "] :=";
-    for (int j = 0; j < network.getVertices()[i].getArcsLeaving().size(); j++) {
-      for (int k = 0; k < network.getArcs().size(); k++) {
+    for (size_t j = 0; j < network.getVertices()[i].getArcsLeaving().size(); j++) {
+      for (size_t k = 0; k < network.getArcs().size(); k++) {
         if (network.getArcs()[k].getId() ==
             network.getVertices()[i].getArcsLeaving()[j]) {
           myFile << " " << network.getArcs()[k].getCode();
@@ -353,7 +353,7 @@ void Writer::createFirstModelDat(Network network, int demand_max_value) {
   // writing stream source    ******************************
   // ********************************
   myFile << "param source :=\n";
-  for (int i = 0; i < network.getRealisations().size(); i++) {
+  for (size_t i = 0; i < network.getRealisations().size(); i++) {
     myFile << "\t" << network.getRealisations()[i].getCode() << "\t"
            << network.getRealisations()[i].getSource().getCode() << "\n";
   }
@@ -362,7 +362,7 @@ void Writer::createFirstModelDat(Network network, int demand_max_value) {
   // writing stream destination   **************************
   // ********************************
   myFile << "param dest :=\n";
-  for (int i = 0; i < network.getRealisations().size(); i++) {
+  for (size_t i = 0; i < network.getRealisations().size(); i++) {
     myFile << "\t" << network.getRealisations()[i].getCode() << "\t"
            << network.getRealisations()[i].getDestination().getCode() << "\n";
   }
@@ -371,7 +371,7 @@ void Writer::createFirstModelDat(Network network, int demand_max_value) {
   // writing stream size ***********************************
   // ********************************
   myFile << "param stream_size :\tM\tV\t:=\n";
-  for (int i = 0; i < network.getRealisations().size(); i++) {
+  for (size_t i = 0; i < network.getRealisations().size(); i++) {
     double size = network.getRealisations()[i].getVolume();
     myFile << "\t\t" << network.getRealisations()[i].getCode() << "\t" << size
            << "\t" << size << "\n";
@@ -381,7 +381,7 @@ void Writer::createFirstModelDat(Network network, int demand_max_value) {
   // writing max delay    **************************************
   // ********************************
   myFile << "param max_delay :=\n";
-  for (int i = 0; i < network.getRealisations().size(); i++) {
+  for (size_t i = 0; i < network.getRealisations().size(); i++) {
     myFile << "\t" << network.getRealisations()[i].getCode() << "\t"
            << "D3"
            << "\n";
@@ -391,12 +391,12 @@ void Writer::createFirstModelDat(Network network, int demand_max_value) {
   // writing travel cost  **********************************
   // ********************************
   myFile << "param travel_cost (tr):";
-  for (int i = 0; i < VEHICLES_NUMBER; i++) {
+  for (size_t i = 0; i < VEHICLES_NUMBER; i++) {
     myFile << "\t" << network.getVehicles()[i];
   }
   myFile << " :=\n";
 
-  for (int i = 0; i < network.getArcs().size(); i++) {
+  for (size_t i = 0; i < network.getArcs().size(); i++) {
     myFile << "\t\t" << network.getArcs()[i].getCode();
     myFile << "\t"
            << (network.getArcs()[i].getLength() /* vehicle_coefficients[0]*/ /

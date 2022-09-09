@@ -59,7 +59,7 @@ int Bee::getQuality() const { return quality; }
 
 void Bee::calculateCost(int realisationsNumber, bool ifCalculateRating) {
   int costBis = 0;
-  for (int i = 0; i < cars.size(); i++) {
+  for (size_t i = 0; i < cars.size(); i++) {
     int tmp =
         cars[i].getPath().getLength();
 
@@ -85,7 +85,7 @@ void Bee::calculateCost(int realisationsNumber, bool ifCalculateRating) {
 // calculates an individual's score on the basis of the average vehicle load
 void Bee::calculateRating() {
   int totalCapacity = 0;
-  for (int i = 0; i < cars.size(); i++)
+  for (size_t i = 0; i < cars.size(); i++)
     totalCapacity += cars[i].getCapacity();
   int averageCapacity = totalCapacity / cars.size();
   double coefficient = (double)cost / 500;
@@ -138,9 +138,9 @@ int Bee::checkInclusion(const Path &path, vector<MyRealisation> realisations) {
   // vector of realisations included in the path of the car
   vector<int> allInclRealisations;
 
-  for (int i = 0; i < realisations.size(); i++) {
+  for (size_t i = 0; i < realisations.size(); i++) {
     bool startFound = false;
-    for (int j = 0; j < path.getVerticesVisited().size(); j++) {
+    for (size_t j = 0; j < path.getVerticesVisited().size(); j++) {
       if (realisations[i].getSource().getId() == path.getVerticesVisited()[j])
         startFound = true;
 
@@ -171,7 +171,7 @@ void Bee::createScout(const Network &network, vector<Path> allPaths) {
 void Bee::printBee(const Network &network) {
   cout << "Printing bee number " << this->id << " with cost " << this->cost
        << endl;
-  for (int i = 0; i < cars.size(); i++)
+  for (size_t i = 0; i < cars.size(); i++)
     this->cars[i].printCar(network);
 }
 
@@ -180,7 +180,7 @@ vector<MyRealisation> Bee::fillTheCars(vector<MyRealisation> realisations) {
   vector<int> carIndexes;
   carIndexes.reserve(cars.size());
 
-  for (int i = 0; i < cars.size(); i++)
+  for (size_t i = 0; i < cars.size(); i++)
     carIndexes.push_back(i);
 
   while (!carIndexes.empty()) {
@@ -220,12 +220,12 @@ void Bee::removeRealisation(int carIndex, int realisationIndex,
 
 // each car checks if it can shorten its routes
 void Bee::removeReduntantArcs(const Network &network) {
-  for (int i = 0; i < this->cars.size(); i++)
+  for (size_t i = 0; i < this->cars.size(); i++)
     cars[i].cutPath(network);
 }
 
 void Bee::unloadCars() {
-  for (int i = 0; i < this->cars.size(); i++)
+  for (size_t i = 0; i < this->cars.size(); i++)
     cars[i].unloadAllRealisations();
 }
 
@@ -238,7 +238,7 @@ void Bee::fillTheCarsBis(const vector<MyRealisation> &real,
 
   vector<int> carsTmp;
   carsTmp.reserve(this->cars.size());
-  for (int i = 0; i < this->cars.size(); i++)
+  for (size_t i = 0; i < this->cars.size(); i++)
     carsTmp.push_back(i);
 
   while (counter != 0) {
@@ -266,7 +266,7 @@ void Bee::fillTheCarsBis(const vector<MyRealisation> &real,
       realisationIndex = rand() % realisations.size();
       counter--;
       carsTmp.clear();
-      for (int i = 0; i < this->cars.size(); i++)
+      for (size_t i = 0; i < this->cars.size(); i++)
         carsTmp.push_back(i);
     } else
       carsTmp.erase(carsTmp.begin() + carIndex);
@@ -279,13 +279,13 @@ void Bee::fillTheCarsBis(const vector<MyRealisation> &real,
         break;
       realisationIndex = rand() % realisations.size();
       carsTmp.clear();
-      for (int i = 0; i < this->cars.size(); i++)
+      for (size_t i = 0; i < this->cars.size(); i++)
         carsTmp.push_back(i);
     }
   }
 
   // we remove cars that have been empty
-  for (int i = 0; i < this->cars.size(); i++) {
+  for (size_t i = 0; i < this->cars.size(); i++) {
     if (this->cars[i].getRealisationsTaken().empty()) {
       cars.erase(cars.begin() + i);
       i--;
@@ -297,7 +297,7 @@ Bee::Bee() {}
 
 // checks each car for a change of its type
 void Bee::checkCarTypes() {
-  for (int i = 0; i < this->cars.size(); i++)
+  for (size_t i = 0; i < this->cars.size(); i++)
     this->cars[i].changeTypeOfCar();
 }
 
