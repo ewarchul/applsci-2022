@@ -1,0 +1,43 @@
+set VERT;
+set ARCS;
+set STREAMS;
+set VEHICLES;
+set DIM;
+set LOG_FUN ordered;
+set DELAYS ordered;
+set ARCSE {VERT};
+set ARCSL {VERT};
+
+
+param source {STREAMS} symbolic within VERT;
+param dest {STREAMS} symbolic within VERT;
+param stream_size {STREAMS, DIM}, >=0;
+param max_delay {STREAMS} symbolic within DELAYS;
+param travel_cost {VEHICLES, ARCS}, >=0;
+param capacity {VEHICLES, DIM}, >=0;
+param next_delay {DELAYS}, symbolic;
+param next_function {LOG_FUN}, symbolic;
+
+var X {s in STREAMS, a in ARCS, d in DELAYS, f in LOG_FUN}, integer >=0;
+var Y {v in VEHICLES, a in ARCS}, integer >=0;
+var Z {s in STREAMS, v in VERT, d in DELAYS, f in LOG_FUN}, integer >=0;
+var W {s in STREAMS, v in VERT, d in DELAYS, f in LOG_FUN}, integer >=0;
+
+
+minimize TotalCost:
+sum {t in VEHICLES,a in ARCS} Y[t,a] * travel_cost[t,a];
+
+subject to FlowConstraint {s in STREAMS, v in VERT, f in LOG_FUN, d in DELAYS:  ord(d,DELAYS) >= ord(max_delay[s],DELAYS) and d <> last(DELAYS)}:
+sum {a in ARCSE[v]} X[s,a,d,f] - sum {a in ARCSL[v]} X[s,a,d,f] = Z[s,v,next(d,DELAYS),f] - Z[s,v,d,f] + (if f <> last(LOG_FUN) then W[s,v,d,next(f,LOG_FUN)]) - W[s,v,d,f];
+
+subject to VehicleConstraint {a in ARCS, m in DIM}:
+sum {s in STREAMS, d in DELAYS, f in LOG_FUN} X[s,a,d,f] * stream_size[s,m] <= sum {t in VEHICLES} Y[t,a] * capacity[t,m];
+
+subject to NetworkConstraint {s in STREAMS}:
+W[s, source[s], max_delay[s], first(LOG_FUN)] = 1;
+
+subject to VertexConstraint {s in STREAMS, f in LOG_FUN, v in VERT: v <> dest[s]}:
+Z[s,v, last(DELAYS), f] = 0;
+
+subject to LogicalConstraint {s in STREAMS, f in LOG_FUN: f <> last(LOG_FUN)}:
+Z[s, dest[s], last(DELAYS), f] = 0;
